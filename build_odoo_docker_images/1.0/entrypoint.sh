@@ -36,21 +36,21 @@ do_all(){
     echo "Logging in to registry"
     echo ${REGISTRY_PASSWORD} | docker login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY_URL}
 
-    echo "Building image ${IMAGE_NAME}:${TAG_NAME}."
-    docker build -t ${IMAGE_NAME}:${TAG_NAME} .
-
+    echo "Building image ${REGISTRY_URL}/${IMAGE_NAME}:${TAG_NAME}."
+    docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${TAG_NAME} .
     echo "Build completed."
-    echo "Pushing ${IMAGE_NAME}:${TAG_NAME} to registry."
-    docker push ${IMAGE_NAME}:${TAG_NAME}
+
+    echo "Pushing ${REGISTRY_URL}/${IMAGE_NAME}:${TAG_NAME} to registry."
+    docker push ${REGISTRY_URL}/${IMAGE_NAME}:${TAG_NAME}
 
     if [ "${LATEST}" == "true" ]; then
       echo "docker tag ${IMAGE_NAME}:latest"
-      docker tag ${IMAGE_NAME}:${TAG_NAME} ${IMAGE_NAME}:latest
+      docker tag ${REGISTRY_URL}/${IMAGE_NAME}:${TAG_NAME} ${REGISTRY_URL}/${IMAGE_NAME}:latest
 
-      echo "docker push ${IMAGE_NAME}:latest"
-      docker push ${IMAGE_NAME}:latest
+      echo "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
+      docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest
     fi
-    echo "Image ${IMAGE_NAME}:${TAG_NAME} succesfully published. Logging out"
+    echo "Image ${REGISTRY_URL}/${IMAGE_NAME}:${TAG_NAME} succesfully published. Logging out"
     docker logout
 }
 
@@ -64,4 +64,3 @@ case $1 in
     _error "Option not valid."
     ;;
 esac
-
